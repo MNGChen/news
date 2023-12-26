@@ -112,6 +112,10 @@ def add_task():
     second_input = request.args.get('second')
 
     # if input time is none then use default time
+    # Accurate time by giving value to each parameter
+    # * means every
+    # sample input: month_input = '6-8,11-12'
+    #                day_input = 'last fri' '3rd fri'
     if year_input is None:
         year_input = '*'
     if month_input is None:
@@ -126,6 +130,9 @@ def add_task():
         second_input = '*/5'
 
     try:
+        # search wih keywords and time limit
+        #sched.add_job(search_news, 'cron', args=[keywords_input, time_limit_input], id='search')
+
         sched.add_job(search_keyword, 'cron',
                       year=year_input, month=month_input, day=day_input,
                       hour=hour_input, minute=minute_input, second=second_input)
@@ -134,6 +141,8 @@ def add_task():
         return 'Error adding task: ' + str(e), 500
 
 @app.route('/list_jobs')
+# print all jobs
+# return job id and next run time
 def list_jobs():
     jobs = sched.get_jobs()
     jobs_info = [{"id": job.id, "next_run_time": str(job.next_run_time)} for job in jobs]
