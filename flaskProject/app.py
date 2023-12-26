@@ -52,12 +52,19 @@ def hello_world():  # put application's code here
 def prompt(task_id):
     print("Executing Task..."+str(task_id))
 
-def search_news(keywords, time_limit):
+def search_news(keywords,filter,nfpr,safe,location,gl,lr,no_cache,tbs):
     GoogleSearch.SERP_API_KEY = "39ffcd6e2c5819a50c7ceb95d2dcecec4f38960d1f065a0f33c848e1abf51da2"
     search = GoogleSearch({
         "q": keywords,  # search
         "tbm": "nws",  # news
-        "tbs": time_limit, #"qdr:d",   last 24h
+        "filter": filter,  # filter
+        "nfpr": nfpr,  # nfpr
+        "safe": safe,  # safe
+        "location": location,  # location
+        "gl": gl,  # gl
+        "lr": lr,  # lr
+        "no_cache": no_cache,  # no_cache
+        "tbs": tbs, #"qdr:d",   last 24h
         "num": "100",  # number of news
     })
     data = search.get_dict()
@@ -100,8 +107,17 @@ def search_news(keywords, time_limit):
 
 @app.route('/add_task', methods=['GET'])
 def add_task():
-    #keywords_input = request.args.get('keywords')
-    #time_limit_input = request.args.get('time_limit')
+    keywords_input = request.args.get('keywords')
+    task_id_input = request.args.get('task_id')
+    filter_input = request.args.get('filter')
+    nfpr_input = request.args.get('nfpr')
+    safe_input = request.args.get('safe')
+    location_input = request.args.get('location')
+    gl_input = request.args.get('gl')
+    lr_input = request.args.get('lr')
+    no_cache_input = request.args.get('no_cache')
+    tbs_input = request.args.get('tbs')
+
 
     # input time
     year_input = request.args.get('year')
@@ -130,8 +146,18 @@ def add_task():
         second_input = '*/5'
 
     try:
-        # search wih keywords and time limit
-        #sched.add_job(search_news, 'cron', args=[keywords_input, time_limit_input], id='search')
+        #sched.add_job(search_news, 'cron',
+        #               args=[      keywords_input,
+        #                           filter_input,
+        #                           nfpr_input,
+        #                           safe_input,
+        #                           location_input,
+        #                           gl_input,
+        #                           lr_input,
+        #                           no_cache_input,
+        #                           tbs_input],
+        #                year=year_input, month=month_input, day=day_input,
+        #                hour=hour_input, minute=minute_input, second=second_input)
 
         sched.add_job(search_keyword, 'cron',
                       year=year_input, month=month_input, day=day_input,
