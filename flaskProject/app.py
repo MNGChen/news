@@ -156,11 +156,11 @@ def add_task():
         #                           lr_input,
         #                           no_cache_input,
         #                           tbs_input],
-        #                year=year_input, month=month_input, day=day_input,
+        #                year=year_input, month=month_input, day_of_week=day_input,
         #                hour=hour_input, minute=minute_input, second=second_input)
 
         sched.add_job(search_keyword, 'cron',
-                      year=year_input, month=month_input, day=day_input,
+                      year=year_input, month=month_input, day_of_week=day_input,
                       hour=hour_input, minute=minute_input, second=second_input)
         return 'Task added: search' #+ keywords_input + ' ' + time_limit_input, 200
     except Exception as e:
