@@ -37,6 +37,8 @@ def add_task():
     hour_input = request.args.get('hour')
     minute_input = request.args.get('minute')
     second_input = request.args.get('second')
+    keyword_id_input = request.args.get('keyword_id')
+    dept_belong_id_input = request.args.get('dept_belong_id')
 
     # if input time is none then use default time
     # Accurate time by giving value to each parameter
@@ -67,7 +69,9 @@ def add_task():
                                   lr_input,
                                   no_cache_input,
                                   tbs_input,
-                                  task_id_input],
+                                  task_id_input,
+                                  keyword_id_input,
+                                  dept_belong_id_input],
                             year=year_input, month=month_input, day=day_input,
                             hour=hour_input, minute=minute_input, second=second_input)
 

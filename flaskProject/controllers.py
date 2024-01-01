@@ -4,7 +4,7 @@ from urllib.parse import parse_qsl, urlsplit
 from config import Config
 import datetime
 
-def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, task_id_input):
+def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, task_id_input, keyword_id_input, dept_belong_id_input):
     GoogleSearch.SERP_API_KEY = Config.SERP_API_KEY
     search = GoogleSearch({
         "q": keywords,  # search
@@ -33,6 +33,8 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
         news.snippet = data['news_results'][position_num]['snippet']
         news.thumbnail = data['news_results'][position_num]['thumbnail']
         news.task_id = task_id_input
+        news.keyword_id = keyword_id_input
+        news.dept_belong_id = dept_belong_id_input
         news.create_time = datetime.datetime.now()
         news.create_time = datetime.datetime.now()
         db.session.add(news)
@@ -52,7 +54,8 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
             news.snippet = data['news_results'][position_num]['snippet']
             news.thumbnail = data['news_results'][position_num]['thumbnail']
             news.task_id = task_id_input
-            # get current timestamp and save to create_time and update_time
+            news.keyword_id = keyword_id_input
+            news.dept_belong_id = dept_belong_id_input
             news.create_time = datetime.datetime.now()
             news.create_time = datetime.datetime.now()
             db.session.add(news)
