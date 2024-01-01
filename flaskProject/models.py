@@ -15,6 +15,8 @@ class News(db.Model):
     task_id = db.Column(db.Integer, nullable=False)
     create_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer, nullable=False)
+    keyword_id = db.Column(db.Integer, nullable=False)
+    dept_belong_id = db.Column(db.Integer, nullable=False)
 
 
 class News_log(db.Model):
