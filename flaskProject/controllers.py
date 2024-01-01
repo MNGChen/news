@@ -3,6 +3,7 @@ from serpapi import GoogleSearch
 from urllib.parse import parse_qsl, urlsplit
 from config import Config
 import datetime
+import time
 
 def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, task_id_input, keyword_id_input, dept_belong_id_input):
     GoogleSearch.SERP_API_KEY = Config.SERP_API_KEY
@@ -35,8 +36,8 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
         news.task_id = task_id_input
         news.keyword_id = keyword_id_input
         news.dept_belong_id = dept_belong_id_input
-        news.create_time = datetime.datetime.now()
-        news.create_time = datetime.datetime.now()
+        news.create_time = time.time()
+        news.update_time = time.time()
         db.session.add(news)
         db.session.commit()
         position_num += 1
@@ -56,8 +57,8 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
             news.task_id = task_id_input
             news.keyword_id = keyword_id_input
             news.dept_belong_id = dept_belong_id_input
-            news.create_time = datetime.datetime.now()
-            news.create_time = datetime.datetime.now()
+            news.create_time = time.time()
+            news.update_time = time.time()
             db.session.add(news)
             db.session.commit()
             position_num += 1
