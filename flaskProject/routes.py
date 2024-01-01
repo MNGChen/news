@@ -6,6 +6,8 @@ from serpapi import GoogleSearch
 from config import Config
 from controllers import search_news
 from models import db, News
+import datetime
+import time
 
 routes = Blueprint('routes', __name__)
 
@@ -108,6 +110,8 @@ def search_keyword():
             news.date = data['news_results'][position_num]['date']
             news.snippet = data['news_results'][position_num]['snippet']
             news.thumbnail = data['news_results'][position_num]['thumbnail']
+            news.create_time = time.time()
+            news.update_time = time.time()
             db.session.add(news)
             db.session.commit()
             position_num += 1
@@ -124,6 +128,8 @@ def search_keyword():
                 news.date = data['news_results'][position_num]['date']
                 news.snippet = data['news_results'][position_num]['snippet']
                 news.thumbnail = data['news_results'][position_num]['thumbnail']
+                news.create_time = time.time()
+                news.update_time = time.time()
                 db.session.add(news)
                 db.session.commit()
                 position_num += 1

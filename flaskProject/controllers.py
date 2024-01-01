@@ -2,6 +2,7 @@ from models import db, News
 from serpapi import GoogleSearch
 from urllib.parse import parse_qsl, urlsplit
 from config import Config
+import datetime
 
 def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, task_id_input):
     GoogleSearch.SERP_API_KEY = Config.SERP_API_KEY
@@ -31,6 +32,9 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
         news.date = data['news_results'][position_num]['date']
         news.snippet = data['news_results'][position_num]['snippet']
         news.thumbnail = data['news_results'][position_num]['thumbnail']
+        news.task_id = task_id_input
+        news.create_time = datetime.datetime.now()
+        news.create_time = datetime.datetime.now()
         db.session.add(news)
         db.session.commit()
         position_num += 1
@@ -48,6 +52,9 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
             news.snippet = data['news_results'][position_num]['snippet']
             news.thumbnail = data['news_results'][position_num]['thumbnail']
             news.task_id = task_id_input
+            # get current timestamp and save to create_time and update_time
+            news.create_time = datetime.datetime.now()
+            news.create_time = datetime.datetime.now()
             db.session.add(news)
             db.session.commit()
             position_num += 1
