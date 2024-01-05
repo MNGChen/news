@@ -4,6 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import request, jsonify
 from flask_migrate import Migrate
 from serpapi import GoogleSearch
+import pandas as pd
 
 from models import app, db, News
 
