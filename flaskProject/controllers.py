@@ -5,6 +5,7 @@ from config import Config
 import datetime
 import time
 
+
 def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, task_id_input, keyword_id_input, dept_belong_id_input):
     GoogleSearch.SERP_API_KEY = Config.SERP_API_KEY
     search = GoogleSearch({

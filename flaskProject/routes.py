@@ -116,6 +116,7 @@ def search_keyword():
             news.thumbnail = data['news_results'][position_num]['thumbnail']
             news.create_time = time.time()
             news.update_time = time.time()
+            news.keyword_id = None
             db.session.add(news)
             db.session.commit()
             position_num += 1
@@ -134,6 +135,7 @@ def search_keyword():
                 news.thumbnail = data['news_results'][position_num]['thumbnail']
                 news.create_time = time.time()
                 news.update_time = time.time()
+                news.keyword_id = None
                 db.session.add(news)
                 db.session.commit()
                 position_num += 1
