@@ -72,7 +72,7 @@ def add_task():
                                   task_id_input,
                                   keyword_id_input,
                                   dept_belong_id_input],
-                            year=year_input, month=month_input, day=day_input,
+                            year=year_input, month=month_input, day_of_week=day_input,
                             hour=hour_input, minute=minute_input, second=second_input)
 
         # sched.add_job(search_keyword, 'cron',
