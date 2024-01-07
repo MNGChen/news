@@ -152,6 +152,15 @@ def list_jobs():
     jobs_info = [{"id": job.id, "next_run_time": str(job.next_run_time)} for job in jobs]
     return jsonify({'code': 200, 'msg': 'success', 'data': jobs_info})
 
+@routes.route('/delete_job', methods=['GET'])
+def delete_job():
+    job_id = request.args.get('job_id')
+    scheduler = current_app.scheduler
+    try:
+        scheduler.remove_job(job_id)
+        return jsonify({'code': 200, 'msg': 'success', 'data': 'delete job success'})
+    except Exception as e:
+        return jsonify({'code': 500, 'msg': 'error', 'data': 'delete job error: ' + str(e)})
 
 @routes.route('/search')
 def search_keyword():
