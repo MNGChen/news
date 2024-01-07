@@ -83,8 +83,33 @@ def add_task():
                 return 'Task added: search' + keywords_input
             except Exception as e:
                 return 'Error adding task: ' + str(e), 500
-        else:
-            return 'Error adding task: both day and day_of_week_input is None', 500
+        else: # 如果day和dayofweek都是空值 默认每天重复执行
+            day_input = '*'
+            try:
+                scheduler = current_app.scheduler
+                scheduler.add_job(search_news, 'cron',
+                                  args=[keywords_input,
+                                        filter_input,
+                                        nfpr_input,
+                                        safe_input,
+                                        location_input,
+                                        gl_input,
+                                        lr_input,
+                                        no_cache_input,
+                                        tbs_input,
+                                        task_id_input,
+                                        keyword_id_input,
+                                        dept_belong_id_input],
+                                  year=year_input, month=month_input, day=day_input,
+                                  hour=hour_input, minute=minute_input, second=second_input)
+
+                # sched.add_job(search_keyword, 'cron',
+                #               year=year_input, month=month_input, day=day_input,
+                #               hour=hour_input, minute=minute_input, second=second_input)
+                # return 'Task added: search'  # + keywords_input + ' ' + time_limit_input, 200
+                return 'Task added: search' + keywords_input
+            except Exception as e:
+                return 'Error adding task: ' + str(e), 500
     else: #按日期分配任务
         try:
             scheduler = current_app.scheduler
