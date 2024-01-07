@@ -33,6 +33,7 @@ def add_task():
     year_input = request.args.get('year')
     month_input = request.args.get('month')
     day_input = request.args.get('day')
+    day_of_week_input = request.args.get('day_of_week')
     hour_input = request.args.get('hour')
     minute_input = request.args.get('minute')
     second_input = request.args.get('second')
@@ -48,8 +49,6 @@ def add_task():
         year_input = '*'
     if month_input is None or month_input == '':
         month_input = '*'
-    if day_input is None or day_input == '':
-        day_input = '*'
     if hour_input is None or hour_input == '':
         hour_input = '*'
     if minute_input is None or minute_input == '':
@@ -57,31 +56,61 @@ def add_task():
     if second_input is None or second_input == '':
         second_input = '*/5'
 
-    try:
-        scheduler = current_app.scheduler
-        scheduler.add_job(search_news, 'cron',
-                            args=[keywords_input,
-                                  filter_input,
-                                  nfpr_input,
-                                  safe_input,
-                                  location_input,
-                                  gl_input,
-                                  lr_input,
-                                  no_cache_input,
-                                  tbs_input,
-                                  task_id_input,
-                                  keyword_id_input,
-                                  dept_belong_id_input],
-                            year=year_input, month=month_input, day_of_week=day_input,
-                            hour=hour_input, minute=minute_input, second=second_input)
+    if day_input is None or day_input == '':
+        if day_of_week_input is not None:# 按周分配任务 day_of_week_input != '':
+            try:
+                scheduler = current_app.scheduler
+                scheduler.add_job(search_news, 'cron',
+                                    args=[keywords_input,
+                                          filter_input,
+                                          nfpr_input,
+                                          safe_input,
+                                          location_input,
+                                          gl_input,
+                                          lr_input,
+                                          no_cache_input,
+                                          tbs_input,
+                                          task_id_input,
+                                          keyword_id_input,
+                                          dept_belong_id_input],
+                                    year=year_input, month=month_input, day_of_week=day_of_week_input,
+                                    hour=hour_input, minute=minute_input, second=second_input)
 
-        # sched.add_job(search_keyword, 'cron',
-        #               year=year_input, month=month_input, day=day_input,
-        #               hour=hour_input, minute=minute_input, second=second_input)
-        # return 'Task added: search'  # + keywords_input + ' ' + time_limit_input, 200
-        return 'Task added: search' + keywords_input
-    except Exception as e:
-        return 'Error adding task: ' + str(e), 500
+                # sched.add_job(search_keyword, 'cron',
+                #               year=year_input, month=month_input, day=day_input,
+                #               hour=hour_input, minute=minute_input, second=second_input)
+                # return 'Task added: search'  # + keywords_input + ' ' + time_limit_input, 200
+                return 'Task added: search' + keywords_input
+            except Exception as e:
+                return 'Error adding task: ' + str(e), 500
+        else:
+            return 'Error adding task: both day and day_of_week_input is None', 500
+    else: #按日期分配任务
+        try:
+            scheduler = current_app.scheduler
+            scheduler.add_job(search_news, 'cron',
+                              args=[keywords_input,
+                                    filter_input,
+                                    nfpr_input,
+                                    safe_input,
+                                    location_input,
+                                    gl_input,
+                                    lr_input,
+                                    no_cache_input,
+                                    tbs_input,
+                                    task_id_input,
+                                    keyword_id_input,
+                                    dept_belong_id_input],
+                              year=year_input, month=month_input, day=day_input,
+                              hour=hour_input, minute=minute_input, second=second_input)
+
+            # sched.add_job(search_keyword, 'cron',
+            #               year=year_input, month=month_input, day=day_input,
+            #               hour=hour_input, minute=minute_input, second=second_input)
+            # return 'Task added: search'  # + keywords_input + ' ' + time_limit_input, 200
+            return 'Task added: search' + keywords_input
+        except Exception as e:
+            return 'Error adding task: ' + str(e), 500
 
 
 @routes.route('/list_jobs')
