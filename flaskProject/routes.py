@@ -1,12 +1,13 @@
 import datetime
 import time
+from urllib.parse import urlsplit, parse_qsl
+
 import pandas as pd
 from config import Config
 from controllers import search_news, search_keyword
 from flask import Blueprint, request, jsonify, current_app
 from models import db, News
 from serpapi import GoogleSearch
-from urllib.parse import urlsplit, parse_qsl
 
 routes = Blueprint('routes', __name__)
 
@@ -57,31 +58,28 @@ def add_task():
         second_input = '*/5'
 
     if day_input is None or day_input == '':
-        if day_of_week_input is not None:# 按周分配任务 day_of_week_input != '':
+        if day_of_week_input is not None:  # 按周分配任务 day_of_week_input != '':
             try:
                 scheduler = current_app.scheduler
                 scheduler.add_job(search_news, 'cron',
-                                    args=[keywords_input,
-                                          filter_input,
-                                          nfpr_input,
-                                          safe_input,
-                                          location_input,
-                                          gl_input,
-                                          lr_input,
-                                          no_cache_input,
-                                          tbs_input,
-                                          task_id_input,
-                                          keyword_id_input,
-                                          dept_belong_id_input],
-                                    year=year_input, month=month_input, day_of_week=day_of_week_input,
-                                    hour=hour_input, minute=minute_input, second=second_input)
+                                  args=[keywords_input,
+                                        filter_input,
+                                        nfpr_input,
+                                        safe_input,
+                                        location_input,
+                                        gl_input,
+                                        lr_input,
+                                        no_cache_input,
+                                        tbs_input,
+                                        task_id_input,
+                                        keyword_id_input,
+                                        dept_belong_id_input],
+                                  year=year_input, month=month_input, day_of_week=day_of_week_input,
+                                  hour=hour_input, minute=minute_input, second=second_input)
 
-                # sched.add_job(search_keyword, 'cron',
-                #               year=year_input, month=month_input, day=day_input,
-                #               hour=hour_input, minute=minute_input, second=second_input)
-                # return 'Task added: search'  # + keywords_input + ' ' + time_limit_input, 200
-                return 'Task added: search' + keywords_input
+                return jsonify({'code': 200, 'msg': 'success', 'data': 'Task added: search' + keywords_input})
             except Exception as e:
+<<<<<<< HEAD
                 return 'Error adding task: ' + str(e), 500
         else: # 如果day和dayofweek都是空值 默认每天重复执行
             day_input = '*'
@@ -139,6 +137,37 @@ def add_task():
                 return 'Task added: search' + keywords_input
             except Exception as e:
                 return 'Error adding task: ' + str(e), 500
+=======
+                return jsonify({'code': 500, 'msg': 'error', 'data': 'Error adding task: ' + str(e)})
+        else:
+            return jsonify({'code': 500, 'msg': 'error', 'data': 'Error adding task: both day and day_of_week_input is None'})
+    else:  # 按日期分配任务
+        try:
+            scheduler = current_app.scheduler
+            scheduler.add_job(search_news, 'cron',
+                              args=[keywords_input,
+                                    filter_input,
+                                    nfpr_input,
+                                    safe_input,
+                                    location_input,
+                                    gl_input,
+                                    lr_input,
+                                    no_cache_input,
+                                    tbs_input,
+                                    task_id_input,
+                                    keyword_id_input,
+                                    dept_belong_id_input],
+                              year=year_input, month=month_input, day=day_input,
+                              hour=hour_input, minute=minute_input, second=second_input)
+
+            # sched.add_job(search_keyword, 'cron',
+            #               year=year_input, month=month_input, day=day_input,
+            #               hour=hour_input, minute=minute_input, second=second_input)
+            # return 'Task added: search'  # + keywords_input + ' ' + time_limit_input, 200
+            return jsonify({'code': 200, 'msg': 'success', 'data': 'Task added: search' + keywords_input})
+        except Exception as e:
+            return jsonify({'code': 500, 'msg': 'error', 'data': 'Error adding task: ' + str(e)})
+>>>>>>> 9c7253266ca7f63de17865382d9188e81d7b3798
 
 
 @routes.route('/list_jobs')
@@ -146,7 +175,7 @@ def list_jobs():
     scheduler = current_app.scheduler
     jobs = scheduler.get_jobs()
     jobs_info = [{"id": job.id, "next_run_time": str(job.next_run_time)} for job in jobs]
-    return jsonify(jobs_info)
+    return jsonify({'code': 200, 'msg': 'success', 'data': jobs_info})
 
 
 @routes.route('/search')
@@ -179,9 +208,9 @@ def search_keyword():
                 news_upload.date = data['news_results'][position_num]['date']
                 news_upload.snippet = data['news_results'][position_num]['snippet']
                 news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
-                #news_upload.task_id = task_id_input
-                #news_upload.keyword_id = keyword_id_input
-                #news_upload.dept_belong_id = dept_belong_id_input
+                # news_upload.task_id = task_id_input
+                # news_upload.keyword_id = keyword_id_input
+                # news_upload.dept_belong_id = dept_belong_id_input
                 news_upload.create_time = time.time()
                 news_upload.update_time = time.time()
                 # update to database
@@ -209,9 +238,9 @@ def search_keyword():
                     news_upload.date = data['news_results'][position_num]['date']
                     news_upload.snippet = data['news_results'][position_num]['snippet']
                     news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
-                    #news_upload.task_id = task_id_input
-                    #news_upload.keyword_id = keyword_id_input
-                    #news_upload.dept_belong_id = dept_belong_id_input
+                    # news_upload.task_id = task_id_input
+                    # news_upload.keyword_id = keyword_id_input
+                    # news_upload.dept_belong_id = dept_belong_id_input
                     news_upload.create_time = time.time()
                     news_upload.update_time = time.time()
                     # update to database
