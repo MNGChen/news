@@ -8,6 +8,7 @@ from controllers import search_news
 from models import db, News
 import datetime
 import time
+import pandas as pd
 
 routes = Blueprint('routes', __name__)
 
@@ -105,20 +106,32 @@ def search_keyword():
         news_num = len(data['news_results'])
         page_num = 1
         position_num = 0
+        reject_num = 0
         page_news_num = len(data['news_results'])
         while position_num < page_news_num:
-            news = News()
-            news.link = data['news_results'][position_num]['link']
-            news.title = data['news_results'][position_num]['title']
-            news.source = data['news_results'][position_num]['source']
-            news.date = data['news_results'][position_num]['date']
-            news.snippet = data['news_results'][position_num]['snippet']
-            news.thumbnail = data['news_results'][position_num]['thumbnail']
-            news.create_time = time.time()
-            news.update_time = time.time()
-            news.keyword_id = None
-            db.session.add(news)
-            db.session.commit()
+            # get the new link
+            news_link = data['news_results'][position_num]['link']
+            # 检查数据库中是否已存在相同的 link
+            existing_news = News.query.filter_by(link=news_link).first()
+            if existing_news is None:
+                news_upload = News()
+                # get data from serpapi
+                news_upload.link = data['news_results'][position_num]['link']
+                news_upload.title = data['news_results'][position_num]['title']
+                news_upload.source = data['news_results'][position_num]['source']
+                news_upload.date = data['news_results'][position_num]['date']
+                news_upload.snippet = data['news_results'][position_num]['snippet']
+                news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
+                #news_upload.task_id = task_id_input
+                #news_upload.keyword_id = keyword_id_input
+                #news_upload.dept_belong_id = dept_belong_id_input
+                news_upload.create_time = time.time()
+                news_upload.update_time = time.time()
+                # update to database
+                db.session.add(news_upload)
+                db.session.commit()
+            else:
+                reject_num += 1
             position_num += 1
         while 'next' in data.get('serpapi_pagination', {}):
             search.params_dict.update(dict(parse_qsl(urlsplit(data.get('serpapi_pagination', {}).get('next')).query)))
@@ -126,22 +139,35 @@ def search_keyword():
             page_news_num = len(data['news_results'])
             position_num = 0
             while position_num < page_news_num:
-                news = News()
-                news.link = data['news_results'][position_num]['link']
-                news.title = data['news_results'][position_num]['title']
-                news.source = data['news_results'][position_num]['source']
-                news.date = data['news_results'][position_num]['date']
-                news.snippet = data['news_results'][position_num]['snippet']
-                news.thumbnail = data['news_results'][position_num]['thumbnail']
-                news.create_time = time.time()
-                news.update_time = time.time()
-                news.keyword_id = None
-                db.session.add(news)
-                db.session.commit()
+                # get the new link
+                news_link = data['news_results'][position_num]['link']
+                # 检查数据库中是否已存在相同的 link
+                existing_news = News.query.filter_by(link=news_link).first()
+                if existing_news is None:
+                    news_upload = News()
+                    # get data from serpapi
+                    news_upload.link = data['news_results'][position_num]['link']
+                    news_upload.title = data['news_results'][position_num]['title']
+                    news_upload.source = data['news_results'][position_num]['source']
+                    news_upload.date = data['news_results'][position_num]['date']
+                    news_upload.snippet = data['news_results'][position_num]['snippet']
+                    news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
+                    #news_upload.task_id = task_id_input
+                    #news_upload.keyword_id = keyword_id_input
+                    #news_upload.dept_belong_id = dept_belong_id_input
+                    news_upload.create_time = time.time()
+                    news_upload.update_time = time.time()
+                    # update to database
+                    db.session.add(news_upload)
+                    db.session.commit()
+                else:
+                    reject_num += 1
                 position_num += 1
             news_num += len(data['news_results'])
             page_num += 1
 
         print('page_num' + str(page_num))
+        print('news_num' + str(news_num))
+        print('reject_num' + str(reject_num))
 
         return 'number of news: ' + str(news_num)

@@ -12,7 +12,7 @@ class News(db.Model):
     date = db.Column(db.Text, nullable=False)
     snippet = db.Column(db.Text, nullable=False)
     thumbnail = db.Column(db.Text, nullable=False)
-    task_id = db.Column(db.Integer, nullable=False)
+    task_id = db.Column(db.Integer, nullable=True)
     create_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer, nullable=False)
     keyword_id = db.Column(db.Integer, nullable=True)
