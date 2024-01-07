@@ -1,14 +1,12 @@
-from urllib.parse import urlsplit, parse_qsl
-
-from flask import Blueprint, request, jsonify, current_app
-from serpapi import GoogleSearch
-
-from config import Config
-from controllers import search_news
-from models import db, News
 import datetime
 import time
 import pandas as pd
+from config import Config
+from controllers import search_news, search_keyword
+from flask import Blueprint, request, jsonify, current_app
+from models import db, News
+from serpapi import GoogleSearch
+from urllib.parse import urlsplit, parse_qsl
 
 routes = Blueprint('routes', __name__)
 
@@ -46,21 +44,22 @@ def add_task():
     # * means every
     # sample input: month_input = '6-8,11-12'
     #                day_input = 'last fri' '3rd fri'
-    if year_input is None:
+    if year_input is None or year_input == '':
         year_input = '*'
-    if month_input is None:
+    if month_input is None or month_input == '':
         month_input = '*'
-    if day_input is None:
+    if day_input is None or day_input == '':
         day_input = '*'
-    if hour_input is None:
+    if hour_input is None or hour_input == '':
         hour_input = '*'
-    if minute_input is None:
+    if minute_input is None or minute_input == '':
         minute_input = '*'
-    if second_input is None:
+    if second_input is None or second_input == '':
         second_input = '*/5'
 
     try:
-        current_app.add_job(search_news, 'cron',
+        scheduler = current_app.scheduler
+        scheduler.add_job(search_news, 'cron',
                             args=[keywords_input,
                                   filter_input,
                                   nfpr_input,
@@ -87,7 +86,8 @@ def add_task():
 
 @routes.route('/list_jobs')
 def list_jobs():
-    jobs = current_app.get_jobs()
+    scheduler = current_app.scheduler
+    jobs = scheduler.get_jobs()
     jobs_info = [{"id": job.id, "next_run_time": str(job.next_run_time)} for job in jobs]
     return jsonify(jobs_info)
 
