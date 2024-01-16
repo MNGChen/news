@@ -1,11 +1,11 @@
-import datetime
+from datetime import datetime, timedelta
 import time
 from urllib.parse import urlsplit, parse_qsl
 
 
 import pandas as pd
 from config import Config
-from controllers import search_news, search_keyword
+from controllers import search_news, search_keyword, time_convert
 from flask import Blueprint, request, jsonify, current_app
 from models import db, News
 from serpapi import GoogleSearch
@@ -189,7 +189,7 @@ def search_keyword():
                 news_upload.link = data['news_results'][position_num]['link']
                 news_upload.title = data['news_results'][position_num]['title']
                 news_upload.source = data['news_results'][position_num]['source']
-                news_upload.date = data['news_results'][position_num]['date']
+                news_upload.date = time_convert(data['news_results'][position_num]['date'])
                 news_upload.snippet = data['news_results'][position_num]['snippet']
                 news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
                 #news_upload.task_id = task_id_input
@@ -206,6 +206,9 @@ def search_keyword():
         while 'next' in data.get('serpapi_pagination', {}):
             search.params_dict.update(dict(parse_qsl(urlsplit(data.get('serpapi_pagination', {}).get('next')).query)))
             data = search.get_dict()
+            # if there is no news_result in the page, then break
+            if 'news_results' not in data:
+                break
             page_news_num = len(data['news_results'])
             position_num = 0
             while position_num < page_news_num:
@@ -219,7 +222,7 @@ def search_keyword():
                     news_upload.link = data['news_results'][position_num]['link']
                     news_upload.title = data['news_results'][position_num]['title']
                     news_upload.source = data['news_results'][position_num]['source']
-                    news_upload.date = data['news_results'][position_num]['date']
+                    news_upload.date = time_convert(data['news_results'][position_num]['date'])
                     news_upload.snippet = data['news_results'][position_num]['snippet']
                     news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
                     #news_upload.task_id = task_id_input

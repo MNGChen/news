@@ -3,7 +3,7 @@ from serpapi import GoogleSearch
 from urllib.parse import parse_qsl, urlsplit
 from config import Config
 import pandas as pd
-import datetime
+from datetime import datetime, timedelta
 import time
 
 
@@ -24,6 +24,8 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
         "num": "100",  # number of news
     })
     data = search.get_dict()
+    if 'news_results' not in data:
+        return "no news found"
     news_num = len(data['news_results'])
     page_num = 1
     position_num = 0
@@ -40,7 +42,7 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
             news_upload.link = data['news_results'][position_num]['link']
             news_upload.title = data['news_results'][position_num]['title']
             news_upload.source = data['news_results'][position_num]['source']
-            news_upload.date = data['news_results'][position_num]['date']
+            news_upload.date = time_convert(data['news_results'][position_num]['date'])
             news_upload.snippet = data['news_results'][position_num]['snippet']
             news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
             news_upload.task_id = task_id_input
@@ -58,6 +60,8 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
     while 'next' in data.get('serpapi_pagination', {}):
         search.params_dict.update(dict(parse_qsl(urlsplit(data.get('serpapi_pagination', {}).get('next')).query)))
         data = search.get_dict()
+        if 'news_results' not in data:
+            break
         page_news_num = len(data['news_results'])
         position_num = 0
         while position_num < page_news_num:
@@ -71,7 +75,7 @@ def search_news(keywords, filter, nfpr, safe, location, gl, lr, no_cache, tbs, t
                 news_upload.link = data['news_results'][position_num]['link']
                 news_upload.title = data['news_results'][position_num]['title']
                 news_upload.source = data['news_results'][position_num]['source']
-                news_upload.date = data['news_results'][position_num]['date']
+                news_upload.date = time_convert(data['news_results'][position_num]['date'])
                 news_upload.snippet = data['news_results'][position_num]['snippet']
                 news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
                 news_upload.task_id = task_id_input
@@ -102,6 +106,8 @@ def search_keyword():
             "num": "100",  # number of news
         })
         data = search.get_dict()
+        if 'news_results' not in data:
+            return "no news found"
         news_num = len(data['news_results'])
         page_num = 1
         position_num = 0
@@ -111,7 +117,7 @@ def search_keyword():
             news_upload.link = data['news_results'][position_num]['link']
             news_upload.title = data['news_results'][position_num]['title']
             news_upload.source = data['news_results'][position_num]['source']
-            news_upload.date = data['news_results'][position_num]['date']
+            news_upload.date = time_convert(data['news_results'][position_num]['date'])
             news_upload.snippet = data['news_results'][position_num]['snippet']
             news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
             news_upload.task_id = task_id_input
@@ -125,6 +131,8 @@ def search_keyword():
         while 'next' in data.get('serpapi_pagination', {}):
             search.params_dict.update(dict(parse_qsl(urlsplit(data.get('serpapi_pagination', {}).get('next')).query)))
             data = search.get_dict()
+            if 'news_results' not in data:
+                break
             page_news_num = len(data['news_results'])
             position_num = 0
             while position_num < page_news_num:
@@ -132,7 +140,7 @@ def search_keyword():
                 news_upload.link = data['news_results'][position_num]['link']
                 news_upload.title = data['news_results'][position_num]['title']
                 news_upload.source = data['news_results'][position_num]['source']
-                news_upload.date = data['news_results'][position_num]['date']
+                news_upload.date = time_convert(data['news_results'][position_num]['date'])
                 news_upload.snippet = data['news_results'][position_num]['snippet']
                 news_upload.thumbnail = data['news_results'][position_num]['thumbnail']
                 news_upload.task_id = task_id_input
@@ -148,3 +156,40 @@ def search_keyword():
 
         print('page_num: ' + str(page_num))
         print('news_num: ' + str(news_num))
+
+
+def time_convert(date_str):
+    # current time
+    date = datetime.now()
+
+    if 'month' in date_str:
+        month = int(date_str.split(' ')[0])
+        date = timedelta(days=month * 30)
+        return (datetime.now() - date).strftime("%Y-%m-%d %H:%M:%S")
+
+    if 'day' in date_str:
+        day = int(date_str.split(' ')[0])
+        date = timedelta(days=day)
+        return (datetime.now() - date).strftime("%Y-%m-%d %H:%M:%S")
+
+    if 'hour' in date_str:
+        hour = int(date_str.split(' ')[0])
+        date = timedelta(hours=hour)
+        return (datetime.now() - date).strftime("%Y-%m-%d %H:%M:%S")
+
+    if 'min' in date_str:
+        minute = int(date_str.split(' ')[0])
+        date = timedelta(minutes=minute)
+        return (datetime.now() - date).strftime("%Y-%m-%d %H:%M:%S")
+
+    if 'second' in date_str:
+        second = int(date_str.split(' ')[0])
+        date = timedelta(seconds=second)
+        return (datetime.now() - date).strftime("%Y-%m-%d %H:%M:%S")
+
+    # if Sept in string, replace it with Sep
+    if 'Sept' in date_str:
+        date_str = date_str.replace('Sept', 'Sep')
+
+    date_obj = datetime.strptime(date_str, '%d %b %Y')
+    return date_obj.strftime("%Y-%m-%d %H:%M:%S")
